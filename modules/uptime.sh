@@ -10,4 +10,4 @@ result=$(while read line; do var=${line% *}; printf $var; done < /proc/uptime)
 
 
 #echo $result
-echo '{ "meta": {"name": "'$name'","version": "'$version'"},"data": [ { "timestamp": "'$timestamp'", "name": "'$name'", "value": "'$result'"}]}'
+printf '{ "meta": {"name": "%s","version": "%s"},"data": [ { "timestamp": "%d", "name": "%s", "value": "%.2f"}]}\n' $name $version $timestamp $name $result
