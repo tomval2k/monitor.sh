@@ -10,24 +10,29 @@ BEGIN {
 
   ARGV[1] = "/proc/stat"
   ARGC = 2
+
+  data[2,0]="user";
+  data[3,0]="nice";
+  data[4,0]="system";
+  data[5,0]="idle";
 }
 
 /^cpu / {
-  labels[2]="user";
-  labels[3]="nice";
-  labels[4]="system";
-  labels[5]="idle";
-
-  for (i=0; i<=3; i++)
-  {
-    data = data sprintf("{ \"timestamp\": \"%d\", \"name\": \"%s\", \"value\": \"%d\" }", timestamp, labels[2+i], $(2+i));
-    if ( i!=3 ){
-      data = data ",";
-    }
-    data = data "\n";
-  }
+  data[2,1]=$2;
+  data[3,1]=$3;
+  data[4,1]=$4;
+  data[5,1]=$5;
 }
 
 END {
-  printf "{ \"meta\": { \"name\": \"%s\", \"version\": \"%s\" } , \"data\": [%s]}\n", name, version, data;
+  printf "{ \"meta\": { \"name\": \"%s\", \"version\": \"%s\" } , \"data\": [", name, version;
+
+  for (i=0; i<=3; i++)
+  {
+    printf("{ \"timestamp\": \"%d\", \"name\": \"%s\", \"value\": \"%d\" }", timestamp, data[2+i,0], data[2+i,1]);
+    if ( i!=3 ){
+      printf ",";
+    }
+  }
+  printf "]}\n";
 }
