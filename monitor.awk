@@ -12,8 +12,6 @@ function gettime(){
 #-> read any supplied values from command line
 #-> config read from config file if specified, and overwritten with supplied arguments
 function setvariables(){
-
-
 #-> check if config file is specified
   for (i in ARGV){
     if (ARGV[i] ~ /^configfile=/ ){
@@ -63,7 +61,6 @@ function setvariables(){
 
 #-> force trailing slash on directories
   sub(/[^\/]$/, "&/", moduledir);
-
 }
 
 
@@ -94,9 +91,19 @@ BEGIN {
 #-> note: no check here to see if executable...
   count = 0;
   cmd = "ls  " moduledir;
+
+#-> check directory exists
+  result=system(cmd " > /dev/null 2>&1");
+
+  if (result != 0){
+    printf "ERROR: '%s' returned error code '%d'\n", cmd, result;
+    exit 1;
+  }
+
   while( cmd | getline line > 0 ){
-    full = moduledir line;
-    cmd2 = full;
+    fullpath = moduledir line;
+
+    cmd2 = fullpath;
     cmd2 | getline result;
     close(cmd2);
 
