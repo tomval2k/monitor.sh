@@ -1,7 +1,5 @@
 #!/usr/bin/awk -f
 
-#-> todo: add error handling
-
 function gettime(){
   cmd = "date +%s";
   cmd | getline timestamp;
@@ -9,18 +7,16 @@ function gettime(){
   return timestamp;
 }
 
-#-> read any supplied values from command line
-#-> config read from config file if specified, and overwritten with supplied arguments
 function setvariables(){
 #-> check if config file is specified
   for (i in ARGV){
-    if (ARGV[i] ~ /^configfile=/ ){
+    if (ARGV[i] ~ /^config=/ ){
       configfile = ARGV[i];
       gsub(/^.*=/, "", configfile);
     }
   }
 
-#-> get values from config file
+#-> get values from config file specfied in script parameter
   while( (getline line < configfile) > 0){
     print "x: " line;
     if (line ~ /^modules.d=/ ){
@@ -37,7 +33,7 @@ function setvariables(){
     }
   }
 
-#-> overwrite values with any parameters passed to script
+#-> overwrite values with any passed as script parameters
   for (i in ARGV){
     if (ARGV[i] ~ /^modules.d=/ ){
       moduledir = ARGV[i];
@@ -63,7 +59,6 @@ function setvariables(){
   sub(/[^\/]$/, "&/", moduledir);
 }
 
-
 #-> dump variables
 function getvariables(){
   printf "--------------------------------------------------\n";
@@ -76,7 +71,7 @@ function getvariables(){
 }
 
 BEGIN {
-  version = "0.1";
+  version = "0.5";
   moduledir = "modules";
 # token = "AABBCC112233";
   user = "tom";
@@ -100,6 +95,7 @@ BEGIN {
     exit 1;
   }
 
+#-> now run each file within directory to get output
   while( cmd | getline line > 0 ){
     fullpath = moduledir line;
 
@@ -116,12 +112,7 @@ BEGIN {
   }
   close(cmd);
 
-
   timeend=gettime();
-
-
   printf "{ \"user\": \"%s\", \"auth\": \"%s\", \"timestart\": \"%d\", \"timeend\": \"%d\", \"update\": [%s]}\n", user, token, timestart, timeend, output;
-
-
   exit;
 }
