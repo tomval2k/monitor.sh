@@ -71,7 +71,7 @@ function getvariables(){
 }
 
 BEGIN {
-  version = "0.5";
+  version = "0.5.0";
   moduledir = "modules";
 # token = "AABBCC112233";
   user = "tom";
