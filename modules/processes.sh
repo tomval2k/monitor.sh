@@ -2,7 +2,7 @@
 
 #module attributes
 name=processes
-version=0.1
+version=0.2.0
 
 #get data (only getting 1 value so pretty simple)
 timestamp=$(date +%s)
@@ -15,5 +15,4 @@ getdata() {
 getdata
 result=$count
 
-#echo '{ "meta": {"name": "'$name'","version": "'$version'"},"data": [ { "timestamp": "'$timestamp'", "name": "'$name'", "value": "'$result'"}]}'
-printf '{ "meta": {"name": "%s","version": "%s"},"data": [ { "timestamp": "%d", "name": "%s", "value": "%d"}]}\n' $name $version $timestamp $name $result
+printf '{ "mod-%s": { "meta": {"name": "%s","version": "%s"},"data": {"%s": { "timestamp": "%d", "value": "%d"}} }}\n' $name $name $version $name $timestamp $result

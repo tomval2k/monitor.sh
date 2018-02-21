@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 
 function gettime(){
-  cmd = "date +%s";
+  cmd = "date +%s.%3N";
   cmd | getline timestamp;
   close(cmd);
   return timestamp;
@@ -103,16 +103,23 @@ BEGIN {
     cmd2 | getline result;
     close(cmd2);
 
+#-> each module produces a line of text which is a valid JSON array,
+#-> so shall remove start and end curly brackets
+    gsub(/^{|}$/, "", result);
+
+
+#-> need a comma after each object except the last
     if (count !=0){
       output = output ", ";
     }
-#   output = output "\n";
     output = output result;
     count ++;
   }
   close(cmd);
 
   timeend=gettime();
-  printf "{ \"user\": \"%s\", \"auth\": \"%s\", \"timestart\": \"%d\", \"timeend\": \"%d\", \"update\": [%s]}\n", user, token, timestart, timeend, output;
+  timeduration=(timeend - timestart);
+
+  printf "{ \"meta\" : { \"user\": \"%s\", \"auth\": \"%s\", \"start\": \"%.3f\", \"end\": \"%.3f\", \"duration\": \"%.3f\" }, \"records\": {%s} }\n", user, token, timestart, timeend, timeduration, output;
   exit;
 }
